@@ -654,14 +654,14 @@ export default function MarkovDemo() {
   // Desenha a string dividida em caixas individuais
   const renderStringBlocks = () => {
     if (currentWord === '') {
-      return <div className="char-block empty">Palavra Vazia (ε)</div>;
+      return <div className="w-[100px] xs:w-[120px] h-8 xs:h-[42px] border border-dashed border-slate-700 rounded flex items-center justify-center text-xs text-slate-500 font-sans">Palavra Vazia (ε)</div>;
     }
 
     const chars = currentWord.split('');
     const match = currentMatch;
 
     return (
-      <div className="string-container">
+      <div className="flex flex-wrap gap-1 justify-center items-center w-full">
         {chars.map((char, idx) => {
           let isCharMatched = false;
           if (match) {
@@ -671,7 +671,11 @@ export default function MarkovDemo() {
           return (
             <div
               key={idx}
-              className={`char-block ${isCharMatched ? 'matched pulse-glow' : ''}`}
+              className={`w-7 h-8 xs:w-9 xs:h-[42px] bg-slate-800 border rounded flex items-center justify-center font-mono text-base xs:text-lg font-bold shadow-sm transition-all duration-205 ${
+                isCharMatched 
+                  ? 'bg-amber-950/70 border-amber-500 text-amber-500 -translate-y-0.5 pulse-glow' 
+                  : 'border-slate-700 text-slate-100'
+              }`}
             >
               {char}
             </div>
@@ -695,21 +699,21 @@ export default function MarkovDemo() {
     const replacementPart = entry.ruleApplied.rhs;
 
     return (
-      <div className="match-hint-overlay">
-        <div className="match-arrow">↓</div>
-        <div className="replacement-container">
+      <div className="flex flex-col items-center gap-1 w-full animate-[slideDown_0.2s_ease-out]">
+        <div className="text-amber-500 text-xl leading-none">↓</div>
+        <div className="flex gap-1 justify-center">
           {replacementPart.split('').map((char, idx) => (
-            <div key={idx} className="char-block replaced">
+            <div key={idx} className="w-7 h-8 xs:w-9 xs:h-[42px] bg-emerald-950/70 border border-emerald-500 text-emerald-500 rounded flex items-center justify-center font-mono text-base xs:text-lg font-bold shadow-sm">
               {char}
             </div>
           ))}
           {replacementPart === '' && (
-            <div className="char-block replaced empty" style={{ width: '42px', height: '48px', fontSize: '12px' }}>
+            <div className="w-7 h-8 xs:w-9 xs:h-[42px] bg-emerald-950/70 border border-emerald-500 text-emerald-500 rounded flex items-center justify-center font-mono text-xs font-bold border-dashed">
               ε
             </div>
           )}
         </div>
-        <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+        <div className="text-[11px] text-slate-500 font-mono">
           Substituição: &quot;{matchedPart || 'ε'}&quot; → &quot;{replacementPart || 'ε'}&quot;
         </div>
       </div>
@@ -726,96 +730,62 @@ export default function MarkovDemo() {
   };
 
   return (
-    <div className="app-container">
+    <div className="max-w-7xl mx-auto px-4 py-8 flex flex-col gap-5 text-slate-100 font-sans">
       {/* Cabeçalho */}
-      <header className="app-header">
-        <div className="header-title-area">
-          <h1>Simulador de Algoritmo Normal de Markov</h1>
-          <p>Linguagens Formais, Autômatos e Reescrita de Símbolos</p>
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b-2 border-slate-700 pb-4 mb-2 gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-blue-400 tracking-tight">Simulador de Algoritmo Normal de Markov</h1>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">Linguagens Formais, Autômatos e Reescrita de Símbolos</p>
         </div>
-        <div className="badge-container">
-          <span className="badge badge-info">Turing Completo</span>
-          <span className="badge badge-accent">Teoria de Computação</span>
+        <div className="flex gap-2">
+          <span className="text-[10px] sm:text-xs font-semibold px-2.5 py-1 rounded border border-blue-900 bg-blue-950/40 text-blue-400 uppercase tracking-wider">Turing Completo</span>
+          <span className="text-[10px] sm:text-xs font-semibold px-2.5 py-1 rounded border border-slate-700 bg-slate-800 text-slate-100 uppercase tracking-wider">Teoria de Computação</span>
         </div>
       </header>
 
       {/* Grid Principal */}
-      <main className="dashboard-grid">
+      <main className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-5">
         
         {/* Coluna Esquerda: Presets & Editor de Regras */}
-        <section className="left-column" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-
-          {/* Seção de Presets */}
-          <div className="glass-card">
-            <h2 className="card-title">
-              <span>Presets Didáticos</span>
-              <span style={{ fontSize: '12px', fontWeight: 'normal', color: 'var(--text-secondary)' }}>
-                Selecione para carregar
-              </span>
-            </h2>
-            <div className="preset-grid">
-              {presets.map((preset, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleSelectPreset(idx)}
-                  className={`preset-btn ${idx === selectedPresetIndex ? 'active' : ''}`}
-                >
-                  <span className="preset-name">{preset.name}</span>
-                  <span className="preset-desc">{preset.description}</span>
-                </button>
-              ))}
-            </div>
-            {presets[selectedPresetIndex]?.academicNote && (
-              <div style={{
-                marginTop: '12px',
-                padding: '10px 14px',
-                background: 'var(--color-accent-glow)',
-                borderLeft: '3px solid var(--color-accent)',
-                borderRadius: '0 var(--radius-md) var(--radius-md) 0',
-                fontSize: '11px',
-                lineHeight: '1.4',
-                color: 'var(--text-secondary)'
-              }}>
-                <strong>Nota Acadêmica:</strong> {presets[selectedPresetIndex].academicNote}
-              </div>
-            )}
-          </div>
-
-          {/* Editor de Regras */}
-          <div className="glass-card" style={{ flexGrow: 1 }}>
-            <h2 className="card-title">
+        <section className="flex flex-col gap-5">
+                    {/* Editor de Regras */}
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-2 shadow-md hover:shadow-lg transition-shadow duration-200 flex-grow">
+            <h2 className="text-sm font-bold mb-4 text-slate-100 flex justify-between items-center uppercase tracking-widest border-b border-slate-700 pb-2">
               <span>Lista de Regras</span>
               <button 
                 onClick={handleClearAllRules}
-                className="btn-icon btn-icon-danger" 
+                className="bg-rose-950/30 border border-rose-500/50 text-rose-400 rounded cursor-pointer text-[10px] font-bold px-2 py-1 transition-colors hover:bg-rose-600 hover:text-white hover:border-rose-600"
                 title="Limpar todas as regras"
-                style={{ fontSize: '11px', width: 'auto', padding: '0 8px' }}
               >
                 Limpar Todas
               </button>
             </h2>
 
-            <div className="rules-container">
+            <div className="flex flex-col gap-2 max-h-[380px] overflow-y-auto pr-1 mb-4">
               {rules.map((rule, index) => {
                 const isCurrentStepRule = currentMatch && currentMatch.ruleIndex === index;
                 
                 return (
                   <div 
                     key={rule.id} 
-                    className={`rule-row ${isCurrentStepRule ? 'matched' : ''}`}
+                    className={`flex items-center gap-2 p-2 bg-slate-900 border rounded-lg transition-all duration-150 flex-wrap sm:flex-nowrap relative ${
+                      isCurrentStepRule 
+                        ? (status.startsWith('halted_terminal') ? 'border-emerald-500 bg-emerald-500/10' : 'border-blue-500 bg-blue-500/10')
+                        : 'border-slate-700'
+                    }`}
                   >
-                    <div className="rule-number">{index + 1}</div>
+                    <div className="font-mono text-xs font-bold text-slate-500 w-[18px] text-center">{index + 1}</div>
                     
                     <input
                       type="text"
                       value={rule.lhs}
                       onChange={(e) => handleUpdateRuleField(index, 'lhs', e.target.value)}
                       placeholder="padrão"
-                      className="rule-input"
+                      className="bg-slate-800 border border-slate-700 text-slate-100 font-mono text-xs px-2 py-1 rounded w-[42%] sm:w-[90px] text-center focus:outline-none focus:border-blue-500 flex-grow sm:flex-grow-0"
                       title="Lado Esquerdo: substring a ser buscada"
                     />
                     
-                    <span className="rule-arrow">
+                    <span className="font-mono text-sm text-slate-300 font-bold w-12 text-center">
                       {rule.isTerminal ? '→ .' : '→'}
                     </span>
                     
@@ -824,23 +794,27 @@ export default function MarkovDemo() {
                       value={rule.rhs}
                       onChange={(e) => handleUpdateRuleField(index, 'rhs', e.target.value)}
                       placeholder="substituir"
-                      className="rule-input"
+                      className="bg-slate-800 border border-slate-700 text-slate-100 font-mono text-xs px-2 py-1 rounded w-[42%] sm:w-[90px] text-center focus:outline-none focus:border-blue-500 flex-grow sm:flex-grow-0"
                       title="Lado Direito: string que substituirá a original"
                     />
 
                     <button
                       onClick={() => handleToggleTerminal(index)}
-                      className={`terminal-toggle ${rule.isTerminal ? 'active' : ''}`}
+                      className={`border rounded px-2 py-1 text-[10px] font-bold cursor-pointer transition-colors w-auto flex-grow sm:flex-grow-0 ${
+                        rule.isTerminal 
+                          ? 'bg-rose-950/40 text-rose-400 border-rose-500 hover:bg-rose-900/40' 
+                          : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750'
+                      }`}
                       title={rule.isTerminal ? "Regra Terminal (Para a máquina após aplicar)" : "Tornar Regra Terminal"}
                     >
                       Terminal
                     </button>
 
-                    <div className="rule-actions">
+                    <div className="flex gap-1 ml-auto w-full sm:w-auto justify-end border-t border-slate-800 sm:border-0 pt-2 sm:pt-0 mt-1 sm:mt-0">
                       <button
                         onClick={() => handleMoveRuleUp(index)}
                         disabled={index === 0}
-                        className="btn-icon"
+                        className="bg-slate-800 border border-slate-700 text-slate-400 w-7 h-7 sm:w-6 sm:h-6 rounded cursor-pointer flex items-center justify-center text-xs sm:text-[10px] transition-colors hover:bg-slate-750 hover:text-slate-100 hover:border-slate-500 disabled:opacity-50"
                         title="Subir prioridade da regra"
                       >
                         ▲
@@ -848,14 +822,14 @@ export default function MarkovDemo() {
                       <button
                         onClick={() => handleMoveRuleDown(index)}
                         disabled={index === rules.length - 1}
-                        className="btn-icon"
+                        className="bg-slate-800 border border-slate-700 text-slate-400 w-7 h-7 sm:w-6 sm:h-6 rounded cursor-pointer flex items-center justify-center text-xs sm:text-[10px] transition-colors hover:bg-slate-750 hover:text-slate-100 hover:border-slate-500 disabled:opacity-50"
                         title="Descer prioridade da regra"
                       >
                         ▼
                       </button>
                       <button
                         onClick={() => handleRemoveRule(index)}
-                        className="btn-icon btn-icon-danger"
+                        className="bg-slate-800 border border-slate-700 text-slate-400 w-7 h-7 sm:w-6 sm:h-6 rounded cursor-pointer flex items-center justify-center text-xs sm:text-[10px] transition-colors hover:bg-rose-950/40 hover:text-rose-400 hover:border-rose-500"
                         title="Excluir regra"
                       >
                         ✕
@@ -866,7 +840,7 @@ export default function MarkovDemo() {
               })}
               
               {rules.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)', fontSize: '13px' }}>
+                <div className="text-center padding-8 text-slate-500 text-sm">
                   Nenhuma regra cadastrada. Adicione regras abaixo para começar.
                 </div>
               )}
@@ -874,47 +848,77 @@ export default function MarkovDemo() {
 
             <button 
               onClick={handleAddRule} 
-              className="add-rule-btn"
-              style={{ width: '100%' }}
+              className="w-full bg-slate-800 border border-dashed border-slate-700 text-slate-300 rounded-lg p-2.5 cursor-pointer font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 hover:border-blue-500 hover:text-blue-400 hover:bg-slate-750"
             >
               ➕ Adicionar Nova Regra
             </button>
           </div>
 
-               {/* Membros da Equipe */}
-          <div className="glass-card">
-            <h2 className="card-title">Membros da Equipe</h2>
-            <div className="team-member-list">
-              <div className="team-member-item">RAFAEL ANTONIO SCHIRNER DARGONI</div>
-              <div className="team-member-item">THIAGO FONSECA RODRIGUES MARTINS</div>
-              <div className="team-member-item">VINICIUS AUGUSTO CORREA LEITE</div>
-              <div className="team-member-item">VINICIUS COTRIM AZZI</div>
+          
+          {/* Seção de Presets */}
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-md hover:shadow-lg transition-shadow duration-200">
+            <h2 className="text-sm font-bold mb-4 text-slate-100 flex justify-between items-center uppercase tracking-widest border-b border-slate-700 pb-2">
+              <span>Presets Didáticos</span>
+              <span className="text-[10px] font-normal text-slate-400 lowercase">
+                Selecione para carregar
+              </span>
+            </h2>
+            <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto pr-1">
+              {presets.map((preset, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleSelectPreset(idx)}
+                  className={`w-full border rounded-lg p-2.5 text-left cursor-pointer transition-all duration-150 flex flex-col gap-0.5 hover:bg-slate-750 hover:border-blue-500 ${
+                    idx === selectedPresetIndex 
+                      ? 'bg-blue-950/40 border-blue-500' 
+                      : 'bg-slate-900 border-slate-700 text-slate-100'
+                  }`}
+                >
+                  <span className="font-bold text-xs text-blue-400">{preset.name}</span>
+                  <span className="text-[10px] text-slate-400 leading-tight">{preset.description}</span>
+                </button>
+              ))}
+            </div>
+            {presets[selectedPresetIndex]?.academicNote && (
+              <div className="mt-3 p-2.5 bg-blue-950/20 border-l-4 border-blue-600 rounded-r-lg text-[11px] leading-relaxed text-slate-300">
+                <strong>Nota Acadêmica:</strong> {presets[selectedPresetIndex].academicNote}
+              </div>
+            )}
+          </div>
+
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-md hover:shadow-lg transition-shadow duration-200">
+            <h2 className="text-sm font-bold mb-4 text-slate-100 flex justify-between items-center uppercase tracking-widest border-b border-slate-700 pb-2">Membros da Equipe</h2>
+            <div className="flex flex-col gap-1.5">
+              <div className="text-xs font-semibold text-slate-300 px-3 py-2 bg-slate-900 border border-slate-700 rounded tracking-wide">RAFAEL ANTONIO SCHIRNER DARGONI</div>
+              <div className="text-xs font-semibold text-slate-300 px-3 py-2 bg-slate-900 border border-slate-700 rounded tracking-wide">THIAGO FONSECA RODRIGUES MARTINS</div>
+              <div className="text-xs font-semibold text-slate-300 px-3 py-2 bg-slate-900 border border-slate-700 rounded tracking-wide">VINICIUS AUGUSTO CORREA LEITE</div>
+              <div className="text-xs font-semibold text-slate-300 px-3 py-2 bg-slate-900 border border-slate-700 rounded tracking-wide">VINICIUS COTRIM AZZI</div>
             </div>
           </div>
 
         </section>
 
         {/* Coluna Direita: Visualizador, Controles, Histórico */}
-        <section className="right-column" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <section className="flex flex-col gap-5">
           
           {/* Cartão do Visualizador */}
-          <div className="glass-card">
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-md hover:shadow-lg transition-shadow duration-200">
             
             {/* Input de String */}
-            <div className="input-section">
-              <div className="word-input-container">
-                <span className="input-label">Palavra de Entrada Inicial</span>
+            <div className="flex flex-col sm:flex-row gap-2.5 mb-5">
+              <div className="flex-grow relative">
+                <span className="absolute -top-2 left-2.5 bg-slate-800 px-1 text-[9px] font-bold uppercase text-blue-500 tracking-wider">Palavra de Entrada Inicial</span>
                 <input
                   type="text"
                   value={initialWord}
                   onChange={(e) => handleWordInputChange(e.target.value)}
                   placeholder="Ex: aabb, 111+11"
-                  className="word-input"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg py-3 px-3.5 text-slate-100 font-mono text-sm focus:outline-none focus:border-blue-500"
                 />
               </div>
               <button 
                 onClick={() => resetSimulation()} 
-                className="btn btn-secondary"
+                className="bg-slate-800 border border-slate-700 text-slate-100 font-sans text-xs font-bold px-4 py-2.5 rounded-lg hover:bg-slate-750 hover:border-slate-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Resetar palavra para o estado inicial"
               >
                 🔄 Reiniciar
@@ -922,8 +926,8 @@ export default function MarkovDemo() {
             </div>
 
             {/* Quadro de Visualização de Reescrita */}
-            <div className="visualization-board">
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', position: 'absolute', top: '10px', left: '15px', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.5px' }}>
+            <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 min-h-[180px] flex flex-col justify-center items-center gap-4 relative overflow-hidden mb-5">
+              <div className="text-[9px] text-slate-500 absolute top-2.5 left-3.5 uppercase font-bold tracking-wider">
                 Painel Visualizador de String
               </div>
               
@@ -934,13 +938,13 @@ export default function MarkovDemo() {
               {renderMatchOverlay()}
 
               {/* Informações inferiores do estado */}
-              <div className="execution-status-panel">
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0 w-full pt-2.5 border-t border-dashed border-slate-700 text-xs">
                 <div>
-                  <span className="status-message">
+                  <span className="font-semibold text-slate-300">
                     Status: <strong className={
-                      status.startsWith('halted_terminal') ? 'success' :
-                      status.startsWith('halted_no_match') ? 'warning' :
-                      status.startsWith('halted_limit') ? 'error' : ''
+                      status.startsWith('halted_terminal') ? 'text-emerald-450' :
+                      status.startsWith('halted_no_match') ? 'text-amber-500' :
+                      status.startsWith('halted_limit') ? 'text-rose-500' : ''
                     }>
                       {status === 'idle' && 'Ocioso'}
                       {status === 'running' && 'Simulando...'}
@@ -951,21 +955,21 @@ export default function MarkovDemo() {
                   </span>
                 </div>
                 <div>
-                  Regra Aplicada: <code style={{ fontSize: '11px', padding: '2px 6px', background: 'var(--bg-main)' }}>{getActiveRuleDescription()}</code>
+                  Regra Aplicada: <code className="text-[11px] px-1.5 py-0.5 rounded bg-slate-950 font-mono text-blue-400">{getActiveRuleDescription()}</code>
                 </div>
-                <div className="step-counter">
+                <div className="font-mono font-bold text-blue-400">
                   Passo: {stepCount} / {activeHistoryIndex} no Histórico
                 </div>
               </div>
             </div>
 
             {/* Controle da Simulação */}
-            <div className="control-bar">
-              <div className="control-btn-group">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
+              <div className="grid grid-cols-2 xs:flex gap-2 w-full md:w-auto">
                 <button
                   onClick={handleStepBackward}
                   disabled={activeHistoryIndex === 0}
-                  className="btn btn-secondary"
+                  className="inline-flex items-center justify-center gap-1.5 font-sans text-xs font-bold px-4 py-2.5 rounded-lg border border-slate-700 cursor-pointer transition-all duration-150 select-none bg-slate-800 text-slate-100 hover:bg-slate-750 hover:border-slate-500 disabled:opacity-50 disabled:cursor-not-allowed w-full xs:w-auto"
                   title="Voltar um passo na história (Undo)"
                 >
                   ⏮️ Voltar
@@ -974,7 +978,11 @@ export default function MarkovDemo() {
                 <button
                   onClick={() => setRunning(!running)}
                   disabled={status.startsWith('halted')}
-                  className={`btn ${running ? 'btn-danger' : 'btn-primary'}`}
+                  className={`inline-flex items-center justify-center gap-1.5 font-sans text-xs font-bold px-4 py-2.5 rounded-lg border cursor-pointer transition-all duration-150 select-none w-full xs:w-auto ${
+                    running 
+                      ? 'bg-rose-950/30 border-rose-500/50 text-rose-400 hover:bg-rose-600 hover:text-white hover:border-rose-600' 
+                      : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-500 hover:border-blue-500'
+                  }`}
                   title={running ? "Pausar auto-execução" : "Executar simulação automaticamente"}
                 >
                   {running ? '⏸️ Pausar' : '▶️ Auto Simular'}
@@ -983,7 +991,7 @@ export default function MarkovDemo() {
                 <button
                   onClick={handleStepForward}
                   disabled={status.startsWith('halted')}
-                  className="btn btn-secondary"
+                  className="inline-flex items-center justify-center gap-1.5 font-sans text-xs font-bold px-4 py-2.5 rounded-lg border border-slate-700 cursor-pointer transition-all duration-150 select-none bg-slate-800 text-slate-100 hover:bg-slate-750 hover:border-slate-500 disabled:opacity-50 disabled:cursor-not-allowed w-full xs:w-auto"
                   title="Avançar exatamente um passo"
                 >
                   ⏭️ Avançar
@@ -992,7 +1000,7 @@ export default function MarkovDemo() {
                 <button
                   onClick={handleRunToEnd}
                   disabled={status.startsWith('halted')}
-                  className="btn btn-accent"
+                  className="inline-flex items-center justify-center gap-1.5 font-sans text-xs font-bold px-4 py-2.5 rounded-lg border cursor-pointer transition-all duration-150 select-none bg-slate-750 border-slate-700 text-slate-100 hover:bg-slate-700 hover:border-slate-500 w-full xs:w-auto"
                   title="Executar todo o algoritmo de uma vez"
                 >
                   🚀 Executar Tudo
@@ -1000,8 +1008,8 @@ export default function MarkovDemo() {
               </div>
 
               {/* Slider de Velocidade */}
-              <div className="speed-panel">
-                <span className="speed-label">Velocidade:</span>
+              <div className="flex items-center justify-between md:justify-start gap-2.5 bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg w-full md:w-auto">
+                <span className="text-[10px] font-bold uppercase text-slate-400 whitespace-nowrap">Velocidade:</span>
                 <input
                   type="range"
                   min="100"
@@ -1009,36 +1017,28 @@ export default function MarkovDemo() {
                   step="100"
                   value={speed}
                   onChange={(e) => setSpeed(Number(e.target.value))}
-                  className="speed-slider"
+                  className="w-full md:w-[100px] h-1 rounded-sm bg-slate-700 accent-blue-500 outline-none cursor-pointer"
                 />
-                <span className="speed-value">{speed}ms</span>
+                <span className="font-mono text-xs font-bold text-blue-400 w-12 text-right">{speed}ms</span>
               </div>
             </div>
 
-            <div style={{
-              padding: '10px 14px',
-              borderRadius: 'var(--radius-md)',
-              background: 'var(--bg-main)',
-              border: '1px solid var(--border-color)',
-              fontSize: '13px',
-              color: 'var(--text-secondary)',
-              lineHeight: '1.4'
-            }}>
+            <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-300 leading-relaxed">
               💡 <strong>Rastreamento:</strong> {statusMessage}
             </div>
 
           </div>
 
           {/* Histórico de Transições */}
-          <div className="glass-card history-section">
-            <div className="history-header">
-              <h2 className="card-title" style={{ margin: 0 }}>Histórico de Execução</h2>
-              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                {history.length} estados registrados
+          <div className="bg-slate-800 border border-slate-700 min-h-[250px] rounded-xl p-5 shadow-md hover:shadow-lg transition-shadow duration-200 mt-2">
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-sm font-bold text-slate-100 uppercase tracking-widest border-b border-slate-700 pb-2 flex-grow" style={{ marginBottom: 0 }}>Histórico de Execução</h2>
+              <span className="text-[11px] text-slate-400">
+                {history.length} estados
               </span>
             </div>
             
-            <div className="history-list">
+            <div className="flex flex-col gap-1.5 max-h-[530px] overflow-y-auto pr-1">
               {history.map((item, idx) => {
                 const isActive = idx === activeHistoryIndex;
                 const ruleText = item.ruleApplied 
@@ -1049,18 +1049,22 @@ export default function MarkovDemo() {
                   <div
                     key={idx}
                     onClick={() => handleSelectHistoryItem(idx)}
-                    className={`history-item ${isActive ? 'active' : ''}`}
+                    className={`grid grid-cols-[50px_1fr_20px_1fr] sm:grid-cols-[60px_1.5fr_30px_1.5fr_1.2fr] items-center p-2 sm:px-3 sm:py-2 border rounded-lg text-xs transition-colors cursor-pointer ${
+                      isActive 
+                        ? 'border-blue-500 bg-blue-500/10' 
+                        : 'border-slate-700 bg-slate-800 hover:bg-slate-750'
+                    }`}
                     title="Clique para inspecionar este estado"
                   >
-                    <span className="hist-step">Passo {item.step}</span>
-                    <span className="hist-word" title={item.wordBefore}>
+                    <span className="font-mono font-bold text-slate-500">Passo {item.step}</span>
+                    <span className="font-mono truncate pr-1" title={item.wordBefore}>
                       {idx === 0 ? 'Entrada: ' : ''}{item.wordBefore}
                     </span>
-                    <span className="hist-arrow">{item.ruleApplied ? '→' : ''}</span>
-                    <span className="hist-rule" title={ruleText}>{ruleText}</span>
-                    <span className={`hist-status ${
-                      item.status === 'terminal' ? 'terminal' : 
-                      item.status === 'no_match' ? 'no-match' : ''
+                    <span className="text-slate-500 text-center">{item.ruleApplied ? '→' : ''}</span>
+                    <span className="font-mono font-bold text-blue-400 truncate pr-1" title={ruleText}>{ruleText}</span>
+                    <span className={`text-[10px] font-semibold text-right col-span-4 sm:col-span-1 sm:text-right border-t border-dashed border-slate-700/50 sm:border-0 pt-1.5 sm:pt-0 mt-1 sm:mt-0 ${
+                      item.status === 'terminal' ? 'text-rose-450' : 
+                      item.status === 'no_match' ? 'text-slate-500' : 'text-slate-300'
                     }`}>
                       {item.status === 'start' && 'Palavra Inicial'}
                       {item.status === 'normal' && 'Reescrita'}
@@ -1079,42 +1083,58 @@ export default function MarkovDemo() {
       </main>
 
       {/* Painel Didático Inferior */}
-      <footer className="glass-card educational-card" style={{ marginTop: '10px' }}>
-        <div className="edu-tabs">
+      <footer className="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-md hover:shadow-lg transition-shadow duration-200 mt-2">
+        <div className="flex flex-wrap justify-center sm:justify-start gap-1.5 border-b-2 border-slate-700 pb-2 mb-3">
           <button 
             onClick={() => setActiveTab('presentation')}
-            className={`tab-btn ${activeTab === 'presentation' ? 'active' : ''}`}
+            className={`bg-none border-b-2 font-bold text-xs sm:text-sm cursor-pointer px-2 py-1 relative transition-colors ${
+              activeTab === 'presentation' 
+                ? 'text-blue-400 border-blue-400' 
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
           >
             📋 O Exemplo da Apresentação
           </button>
           <button 
             onClick={() => setActiveTab('concept')}
-            className={`tab-btn ${activeTab === 'concept' ? 'active' : ''}`}
+            className={`bg-none border-b-2 font-bold text-xs sm:text-sm cursor-pointer px-2 py-1 relative transition-colors ${
+              activeTab === 'concept' 
+                ? 'text-blue-400 border-blue-400' 
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
           >
             📖 O que é o Algoritmo?
           </button>
           <button 
             onClick={() => setActiveTab('execution')}
-            className={`tab-btn ${activeTab === 'execution' ? 'active' : ''}`}
+            className={`bg-none border-b-2 font-bold text-xs sm:text-sm cursor-pointer px-2 py-1 relative transition-colors ${
+              activeTab === 'execution' 
+                ? 'text-blue-400 border-blue-400' 
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
           >
             ⚙️ Regras de Execução
           </button>
           <button 
             onClick={() => setActiveTab('turing')}
-            className={`tab-btn ${activeTab === 'turing' ? 'active' : ''}`}
+            className={`bg-none border-b-2 font-bold text-xs sm:text-sm cursor-pointer px-2 py-1 relative transition-colors ${
+              activeTab === 'turing' 
+                ? 'text-blue-400 border-blue-400' 
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
           >
             🧠 Chomsky e Turing-Completude
           </button>
         </div>
 
-        <div className="edu-content">
+        <div className="leading-relaxed text-xs sm:text-sm text-slate-300">
           {activeTab === 'presentation' && (
             <div>
-              <h3>Comparativo da Apresentação ({initialWord === 'aabb' ? 'aabb' : 'Entrada Atual'})</h3>
+              <h3 className="text-sm font-bold text-slate-100 mt-4 mb-2">Comparativo da Apresentação ({initialWord === 'aabb' ? 'aabb' : 'Entrada Atual'})</h3>
               <p>
                 Na sua apresentação escrita, vocês detalharam o seguinte exemplo:
               </p>
-              <div className="code-box">
+              <div className="bg-slate-900 border border-slate-700 rounded p-2 sm:p-3 font-mono text-xs text-slate-100 my-2 whitespace-pre-wrap break-all">
 Alfabeto: &lbrace;a, b&rbrace;
 Regras Ordenadas:
 1. ab → ba
@@ -1122,10 +1142,10 @@ Regras Ordenadas:
 3. bb → b
 Palavra Inicial: aabb
               </div>
-              <p>
+              <p className="mt-3">
                 <strong>Diferença de Execução (Computação Formal vs. Derivação Manual):</strong>
               </p>
-              <ul>
+              <ul className="list-disc pl-5 my-2 flex flex-col gap-2">
                 <li>
                   <strong>Execução Determinística do ANM (Leftmost Match):</strong> 
                   O algoritmo percorre a palavra da esquerda para a direita. No estado <code>abab</code>, 
@@ -1133,17 +1153,17 @@ Palavra Inicial: aabb
                   rigorosamente definido para substituir a ocorrência <strong>mais à esquerda</strong>. 
                   Portanto, <code>abab</code> torna-se <code>baab</code> (passo 2) e depois <code>bbaa</code> (passo 3). 
                   O algoritmo conclui em <strong>5 passos</strong>: 
-                  <code style={{ background: 'var(--bg-main)', padding: '2px 6px', borderRadius: '4px' }}>aabb → abab → baab → bbaa → bba → ba</code>.
+                  <code className="bg-slate-950 text-blue-450 px-1.5 py-0.5 rounded font-mono ml-1 text-xs">aabb → abab → baab → bbaa → bba → ba</code>.
                 </li>
                 <li>
                   <strong>Trace Manual da Apresentação:</strong> 
                   Na computação livre efetuada por humanos, escolheu-se comutar primeiro o segundo <code>ab</code> em <code>abab</code>, 
                   gerando <code>abba</code>, para depois comutar o primeiro <code>ab</code>, resultando em <code>baba</code> e depois <code>bbaa</code>. 
                   Isso resulta em um caminho de <strong>7 passos</strong>: 
-                  <code style={{ background: 'var(--bg-main)', padding: '2px 6px', borderRadius: '4px' }}>aabb → abab → abba → baba → bbaa → bba → ba</code>.
+                  <code className="bg-slate-950 text-slate-400 px-1.5 py-0.5 rounded font-mono ml-1 text-xs">aabb → abab → abba → baba → bbaa → bba → ba</code>.
                 </li>
               </ul>
-              <p>
+              <p className="mt-3">
                 <em>Essa diferença é perfeita para explicar em aula!</em> Ela ilustra claramente a diferença entre um 
                 sistema de reescrita semi-Thue geral (onde qualquer regra pode ser aplicada em qualquer local, de forma não determinística) 
                 e o <strong>Algoritmo Normal de Markov</strong>, que impõe uma ordem estrita (de cima para baixo na lista de regras, 
@@ -1154,14 +1174,14 @@ Palavra Inicial: aabb
 
           {activeTab === 'concept' && (
             <div>
-              <h3>O que é o Algoritmo Normal de Markov (ANM)?</h3>
+              <h3 className="text-sm font-bold text-slate-100 mt-4 mb-2">O que é o Algoritmo Normal de Markov (ANM)?</h3>
               <p>
                 Inventado pelo matemático soviético Andrey Markov Jr. em 1950, o <strong>Algoritmo Normal de Markov</strong> é 
                 um sistema de substituição de strings (reescrita de palavras) que serve como modelo formal de computação. 
                 Ao contrário de autômatos que utilizam estados explícitos (como Autômatos Finitos ou de Pilha), o ANM realiza 
                 toda a sua computação puramente por manipulação simbólica de textos.
               </p>
-              <p>
+              <p className="mt-2">
                 Ele é considerado um modelo de computação de <strong>Tipo 0</strong> na Hierarquia de Chomsky (Gramáticas Irrestritas), 
                 sendo formalmente equivalente a Máquinas de Turing. Qualquer programa de computador ou algoritmo computável pode 
                 ser codificado utilizando apenas substituições de Markov.
@@ -1171,11 +1191,11 @@ Palavra Inicial: aabb
 
           {activeTab === 'execution' && (
             <div>
-              <h3>Regras e Ordem de Execução</h3>
+              <h3 className="text-sm font-bold text-slate-100 mt-4 mb-2">Regras e Ordem de Execução</h3>
               <p>
                 Para rodar o algoritmo de forma mecânica sobre uma palavra inicial $W$, repete-se o ciclo:
               </p>
-              <ol>
+              <ol className="list-decimal pl-5 my-2 flex flex-col gap-1.5">
                 <li>
                   <strong>Varredura de Regras:</strong> Varre-se a lista de regras ordenadamente do topo ($Rule_1$) para baixo ($Rule_n$).
                 </li>
@@ -1188,7 +1208,7 @@ Palavra Inicial: aabb
                 </li>
                 <li>
                   <strong>Fluxo de Controle:</strong> 
-                  <ul>
+                  <ul className="list-disc pl-5 mt-1">
                     <li>Se a regra aplicada era <strong>terminal</strong> (representada por um ponto $L \to .R$), o algoritmo <strong>para imediatamente</strong>.</li>
                     <li>Se a regra for comum, o ciclo <strong>reinicia inteiramente</strong> a partir da primeira regra da lista ($Rule_1$) usando a nova palavra.</li>
                   </ul>
@@ -1202,22 +1222,22 @@ Palavra Inicial: aabb
 
           {activeTab === 'turing' && (
             <div>
-              <h3>Relação com Gramáticas de Chomsky e Máquinas de Turing</h3>
+              <h3 className="text-sm font-bold text-slate-100 mt-4 mb-2">Relação com Gramáticas de Chomsky e Máquinas de Turing</h3>
               <p>
                 Na matéria de <strong>Linguagens Formais e Autômatos</strong>, estudamos diferentes poderes computacionais. 
                 O Algoritmo de Markov possui equivalência com a <strong>Máquina de Turing</strong>.
               </p>
-              <p>
+              <p className="mt-2">
                 Isso significa que, embora pareça simples (apenas substituição de substrings), o ANM é <strong>Turing-completo</strong>. 
                 Com regras bem desenhadas, ele consegue emular:
               </p>
-              <ul>
+              <ul className="list-disc pl-5 my-2 flex flex-col gap-1.5">
                 <li>Variáveis e Cabeças de Leitura (usando marcadores como <code>p</code>, <code>X</code>, <code>|</code>).</li>
                 <li>Estruturas de decisão (seletores).</li>
                 <li>Laços de repetição (loops por meio de reescritas sucessivas recursivas).</li>
                 <li>Operações aritméticas completas (multiplicação, soma, divisão).</li>
               </ul>
-              <p>
+              <p className="mt-2">
                 Isso prova que a computação não requer necessariamente chips ou registradores físicos: ela pode ocorrer de maneira 
                 completamente abstrata por meio da manipulação estruturada de símbolos!
               </p>
