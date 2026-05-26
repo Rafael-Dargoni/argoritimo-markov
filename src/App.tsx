@@ -653,11 +653,14 @@ export default function MarkovDemo() {
   
   // Desenha a string dividida em caixas individuais
   const renderStringBlocks = () => {
-    if (currentWord === '') {
+    const entry = history[activeHistoryIndex];
+    const wordToShow = (entry && entry.ruleApplied) ? entry.wordBefore : currentWord;
+
+    if (wordToShow === '') {
       return <div className="w-[100px] xs:w-[120px] h-8 xs:h-[42px] border border-dashed border-slate-700 rounded flex items-center justify-center text-xs text-slate-500 font-sans">Palavra Vazia (ε)</div>;
     }
 
-    const chars = currentWord.split('');
+    const chars = wordToShow.split('');
     const match = currentMatch;
 
     return (
@@ -958,7 +961,7 @@ export default function MarkovDemo() {
                   Regra Aplicada: <code className="text-[11px] px-1.5 py-0.5 rounded bg-slate-950 font-mono text-blue-400">{getActiveRuleDescription()}</code>
                 </div>
                 <div className="font-mono font-bold text-blue-400">
-                  Passo: {stepCount} / {activeHistoryIndex} no Histórico
+                  Passo: {activeHistoryIndex} / {history.length - 1} no Histórico
                 </div>
               </div>
             </div>
